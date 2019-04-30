@@ -47,18 +47,17 @@ public class StatisticsController {
 	    st.setMax(max);
 	    st.setMin(min);
 	    
-		return new ResponseEntity<>(st, HttpStatus.CREATED);
+		return new ResponseEntity<>(st, HttpStatus.OK);
 	}
 	
 	@PostMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity saveTransaction(@RequestBody Transaction transactionRequest) throws Exception {
-		long currentTimeMillis = System.currentTimeMillis();
 		
 		if(transactionRequest.getTimestamp() == null || transactionRequest.getAmount() == null) {
 			throw new Exception();
 		}
-		boolean ret = transactionFactory.addTransaction(transactionRequest, currentTimeMillis);
-		if(ret) {
+
+		if(transactionFactory.addTransaction(transactionRequest)) {
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
 		return  new ResponseEntity<>(HttpStatus.NO_CONTENT);

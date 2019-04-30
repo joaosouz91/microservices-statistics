@@ -11,12 +11,14 @@ import br.com.fiap.joaovictor.microservicesstatistics.model.Transaction;
 @Repository
 public class TransactionFactory {
 
-    private List<Transaction> transactions = new ArrayList<Transaction>();
-    //private static List<Transaction> transactions = Collections.synchronizedList(new ArrayList<Transaction>());
+    //private List<Transaction> transactions = new ArrayList<Transaction>();
+    private static List<Transaction> transactions = Collections.synchronizedList(new ArrayList<Transaction>());
     
-    public boolean addTransaction(Transaction transaction, long requestTimestamp) {
- 
-    	long difference = requestTimestamp - transaction.getTimestamp();
+    public boolean addTransaction(Transaction transaction) {
+    	
+    	Long sysTimestamp = System.currentTimeMillis();
+    	
+    	long difference = sysTimestamp - transaction.getTimestamp();
 		System.out.println("DIFFERENCE: " + difference);
 		if(difference > 60000l) {
 			return false;
@@ -32,7 +34,7 @@ public class TransactionFactory {
     
     public List<Transaction> getLastSixtySecondsTransactions(long requestTimestamp){
 		
-    	List<Transaction> lastSixtySecondsTransactions = new ArrayList<Transaction>();
+    	List<Transaction> lastSixtySecondsTransactions = Collections.synchronizedList(new ArrayList<Transaction>());
     	for (Transaction transaction : transactions) {
 			long difference = requestTimestamp - transaction.getTimestamp();
 			if(difference <= 60000l) {
@@ -40,5 +42,9 @@ public class TransactionFactory {
 			}
 		}
     	return lastSixtySecondsTransactions;
+    }
+    
+    public void removeAllTransactions() {
+    	transactions.clear();
     }
 }

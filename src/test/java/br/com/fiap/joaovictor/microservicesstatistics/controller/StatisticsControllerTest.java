@@ -53,7 +53,7 @@ public class StatisticsControllerTest {
         String jsonStr = mapper.writeValueAsString(transaction);
         System.out.println("SYSOUT: " + jsonStr);
         
-        when(transactionFactory.addTransaction(transaction, sysTimestamp)).thenCallRealMethod(); // thenReturn(true);
+        when(transactionFactory.addTransaction(transaction)).thenReturn(true); // thenReturn(true);
 
         mvc.perform(post("/statistics-service/transactions")
                 .contentType("application/json").content(jsonStr))
@@ -68,7 +68,7 @@ public class StatisticsControllerTest {
         mapper.findAndRegisterModules();
         String jsonInString = mapper.writeValueAsString(transaction);
 
-        when(this.transactionFactory.addTransaction(transaction, sysTimestamp)).thenCallRealMethod(); //thenThrow(MoreThan60SecException.class);
+        when(this.transactionFactory.addTransaction(transaction)).thenReturn(false); //thenThrow(MoreThan60SecException.class);
 
         mvc.perform(post("/statistics-service/transactions")
                 .contentType("application/json").content(jsonInString))
@@ -88,10 +88,12 @@ public class StatisticsControllerTest {
         Transaction t1 = new Transaction(sysTimestamp - 1, 300.00);
         Transaction t2 = new Transaction(sysTimestamp - 2, 200.00);
         Transaction t3 = new Transaction(sysTimestamp - 3, 400.00);
-
-        transactionFactory.addTransaction(t1, sysTimestamp);
-        transactionFactory.addTransaction(t2, sysTimestamp);
-        transactionFactory.addTransaction(t3, sysTimestamp);
+        
+        transactionFactory.removeAllTransactions();
+        
+        transactionFactory.addTransaction(t1);
+        transactionFactory.addTransaction(t2);
+        transactionFactory.addTransaction(t3);
 
         List<Transaction> lastSixtySecondsTransactions = new ArrayList<Transaction>();
         if (sysTimestamp - t1.getTimestamp() <= 60000) {
@@ -118,21 +120,14 @@ public class StatisticsControllerTest {
 
     @Test
     public void statisticsNotFoundedIn60Sec() throws Exception {
-        Statistics statistics = new Statistics(
-        		0l,
-        		0.00,
-                0.00,
-                0.00,
-                0.00                
-        );
 
         Transaction t1 = new Transaction(sysTimestamp - 60001, 300.00);
         Transaction t2 = new Transaction(sysTimestamp - 60002, 200.00);
         Transaction t3 = new Transaction(sysTimestamp - 60003, 400.00);
 
-        this.transactionFactory.addTransaction(t1, sysTimestamp);
-        this.transactionFactory.addTransaction(t2, sysTimestamp);
-        this.transactionFactory.addTransaction(t3, sysTimestamp);
+        this.transactionFactory.addTransaction(t1);
+        this.transactionFactory.addTransaction(t2);
+        this.transactionFactory.addTransaction(t3);
 
         List<Transaction> lastSixtySecondsTransactions = new ArrayList<Transaction>();
         if (sysTimestamp - t1.getTimestamp() <= 60000) {
