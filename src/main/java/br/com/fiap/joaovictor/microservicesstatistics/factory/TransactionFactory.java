@@ -24,7 +24,7 @@ public class TransactionFactory {
     	long difference = sysTimestamp - transaction.getTimestamp();
 		
 		if(difference > 60000l) {
-			throw new SisxtySecondsReachedException();
+			return false;
 		}
 		
         transactions.add(transaction);

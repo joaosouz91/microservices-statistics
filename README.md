@@ -15,7 +15,7 @@
 
 ### Method: POST
 * *Endpoint:* http://localhost:8080/statistics-service/transaction
-* *Response Example:* 
+* *Request Example:* 
 ```json5
 {
     "timestamp": 0,
@@ -27,15 +27,15 @@
 * Create image with Docker	
 		
 `				
-docker build -f Dockerfile -t target/transaction-statistics-service .
+docker build -f Dockerfile -t docker-spring-boot .
 `
 
 * Run image on port 8080
 									
 `
-docker run -p 8080:8080 -t target/transaction-statistics-service
+docker run -p 8080:8080 -t docker-spring-boot
 `
 
 ## Swagger
-`
+
 http://localhost:8080/swagger-ui.html

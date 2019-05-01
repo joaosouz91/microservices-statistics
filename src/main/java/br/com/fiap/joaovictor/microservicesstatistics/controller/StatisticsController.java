@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.OptionalDouble;
 
+import org.hibernate.validator.internal.util.privilegedactions.NewInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,22 +54,13 @@ public class StatisticsController {
 	}
 	
 	@PostMapping(value = "/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity saveTransaction(@RequestBody Transaction transactionRequest) throws Exception {
+	public ResponseEntity saveTransaction(@RequestBody Transaction transactionRequest) throws SisxtySecondsReachedException {
 		
-		if(transactionRequest.getTimestamp() == null || transactionRequest.getAmount() == null) {
+		if(transactionFactory.addTransaction(transactionRequest)) {
+			return new ResponseEntity<>(HttpStatus.CREATED);
+		} else {
 			throw new SisxtySecondsReachedException();
 		}
-		
-		try {
-			if(transactionFactory.addTransaction(transactionRequest)) {
-				return new ResponseEntity<>(HttpStatus.CREATED);
-			}
-		} catch (SisxtySecondsReachedException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new ServerException();
-		}
-		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 }

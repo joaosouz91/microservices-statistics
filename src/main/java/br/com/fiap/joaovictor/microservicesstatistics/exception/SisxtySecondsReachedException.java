@@ -10,4 +10,5 @@ public class SisxtySecondsReachedException extends Exception{
         super("The transaction request exceeded the 60 seconds limit to reach the server." + toMap(String.class, String.class, params));
     }
 
+	
 }
