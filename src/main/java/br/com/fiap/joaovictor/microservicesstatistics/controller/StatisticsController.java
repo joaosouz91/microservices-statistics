@@ -28,8 +28,7 @@ public class StatisticsController {
 		
 	@GetMapping(value = "/statistics", produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity getStatistics() {
-		long currentTimeMillis = System.currentTimeMillis();
-		List<Transaction> lastSixtySecondsTransactions = transactionFactory.getLastSixtySecondsTransactions(currentTimeMillis);
+		List<Transaction> lastSixtySecondsTransactions = transactionFactory.getLastSixtySecondsTransactions();
 	
 		if(lastSixtySecondsTransactions == null || lastSixtySecondsTransactions.size() == 0) return new ResponseEntity<>( HttpStatus.NO_CONTENT );
 		
@@ -60,7 +59,7 @@ public class StatisticsController {
 		if(transactionFactory.addTransaction(transactionRequest)) {
 			return new ResponseEntity<>(HttpStatus.CREATED);
 		}
-		return  new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 }

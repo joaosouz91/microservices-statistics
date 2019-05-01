@@ -53,7 +53,7 @@ public class StatisticsControllerTest {
         String jsonStr = mapper.writeValueAsString(transaction);
         System.out.println("SYSOUT: " + jsonStr);
         
-        when(transactionFactory.addTransaction(transaction)).thenReturn(true); // thenReturn(true);
+        when(transactionFactory.addTransaction(transaction)).thenReturn(true);
 
         mvc.perform(post("/statistics-service/transactions")
                 .contentType("application/json").content(jsonStr))
@@ -68,7 +68,7 @@ public class StatisticsControllerTest {
         mapper.findAndRegisterModules();
         String jsonInString = mapper.writeValueAsString(transaction);
 
-        when(this.transactionFactory.addTransaction(transaction)).thenReturn(false); //thenThrow(MoreThan60SecException.class);
+        when(this.transactionFactory.addTransaction(transaction)).thenReturn(false);
 
         mvc.perform(post("/statistics-service/transactions")
                 .contentType("application/json").content(jsonInString))
@@ -76,7 +76,7 @@ public class StatisticsControllerTest {
     }
 
     @Test
-    public void statisticsFoundedIn60Sec() throws Exception {
+    public void statisticsFoundedInSixtySeconds() throws Exception {
         Statistics statistics = new Statistics(
         		3l,
         		900.00,
@@ -88,8 +88,6 @@ public class StatisticsControllerTest {
         Transaction t1 = new Transaction(sysTimestamp - 1, 300.00);
         Transaction t2 = new Transaction(sysTimestamp - 2, 200.00);
         Transaction t3 = new Transaction(sysTimestamp - 3, 400.00);
-        
-        transactionFactory.removeAllTransactions();
         
         transactionFactory.addTransaction(t1);
         transactionFactory.addTransaction(t2);
@@ -106,7 +104,7 @@ public class StatisticsControllerTest {
         	lastSixtySecondsTransactions.add(t3);
         }
 
-        when(this.transactionFactory.getLastSixtySecondsTransactions(sysTimestamp)).thenReturn(lastSixtySecondsTransactions);
+        when(this.transactionFactory.getLastSixtySecondsTransactions()).thenReturn(lastSixtySecondsTransactions);
 
         mvc.perform(get("/statistics-service/statistics")
                 .accept(MediaType.APPLICATION_JSON))
@@ -119,7 +117,7 @@ public class StatisticsControllerTest {
     }
 
     @Test
-    public void statisticsNotFoundedIn60Sec() throws Exception {
+    public void statisticsNotFoundedInSixtySeconds() throws Exception {
 
         Transaction t1 = new Transaction(sysTimestamp - 60001, 300.00);
         Transaction t2 = new Transaction(sysTimestamp - 60002, 200.00);
@@ -140,7 +138,7 @@ public class StatisticsControllerTest {
         	lastSixtySecondsTransactions.add(t3);
         }
 
-        when(this.transactionFactory.getLastSixtySecondsTransactions(sysTimestamp)).thenReturn(lastSixtySecondsTransactions);
+        when(this.transactionFactory.getLastSixtySecondsTransactions()).thenReturn(lastSixtySecondsTransactions);
 
         mvc.perform(get("/statistics-service/statistics")
                 .contentType("application/json"))
