@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.fiap.joaovictor.microservicesstatistics.exception.Exceptions;
+import br.com.fiap.joaovictor.microservicesstatistics.exception.ServerException;
+import br.com.fiap.joaovictor.microservicesstatistics.exception.SisxtySecondsReachedException;
 import br.com.fiap.joaovictor.microservicesstatistics.factory.TransactionFactory;
 import br.com.fiap.joaovictor.microservicesstatistics.model.Statistics;
 import br.com.fiap.joaovictor.microservicesstatistics.model.Transaction;
@@ -34,11 +37,11 @@ public class StatisticsController {
 		
 		Statistics st = new Statistics();
 		
-		double sum = lastSixtySecondsTransactions.stream().mapToDouble(num -> num.getAmount()).sum();
-		double avg = lastSixtySecondsTransactions.stream().mapToDouble(num -> num.getAmount()).average().orElse( Double.NaN );
-		double max = Collections.max(lastSixtySecondsTransactions, Comparator.comparing(v -> v.getAmount())).getAmount();
-		double min = Collections.min(lastSixtySecondsTransactions, Comparator.comparing(v -> v.getAmount())).getAmount();
-		long count = lastSixtySecondsTransactions.stream().count();
+		Double sum = lastSixtySecondsTransactions.stream().mapToDouble(num -> num.getAmount()).sum();
+		Double avg = lastSixtySecondsTransactions.stream().mapToDouble(num -> num.getAmount()).average().orElse( Double.NaN );
+		Double max = Collections.max(lastSixtySecondsTransactions, Comparator.comparing(v -> v.getAmount())).getAmount();
+		Double min = Collections.min(lastSixtySecondsTransactions, Comparator.comparing(v -> v.getAmount())).getAmount();
+		Long count = lastSixtySecondsTransactions.stream().count();
 
 	    st.setCount(count);
 	    st.setSum(sum);
@@ -53,11 +56,17 @@ public class StatisticsController {
 	public ResponseEntity saveTransaction(@RequestBody Transaction transactionRequest) throws Exception {
 		
 		if(transactionRequest.getTimestamp() == null || transactionRequest.getAmount() == null) {
-			throw new Exception();
+			throw new SisxtySecondsReachedException();
 		}
-
-		if(transactionFactory.addTransaction(transactionRequest)) {
-			return new ResponseEntity<>(HttpStatus.CREATED);
+		
+		try {
+			if(transactionFactory.addTransaction(transactionRequest)) {
+				return new ResponseEntity<>(HttpStatus.CREATED);
+			}
+		} catch (SisxtySecondsReachedException e) {
+			throw e;
+		} catch (Exception e) {
+			throw new ServerException();
 		}
 		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}

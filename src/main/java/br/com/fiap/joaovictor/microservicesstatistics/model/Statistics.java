@@ -11,10 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Statistics {
 	
-	private long count;
-	private double sum;
-    private double avg;
-    private double max;
-    private double min;
+	private Long count;
+	private Double sum;
+    private Double avg;
+    private Double max;
+    private Double min;
     
 }
